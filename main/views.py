@@ -15,3 +15,7 @@ def login(request):
         return HttpResponseRedirect('./')
     else:
         return HttpResponseRedirect('/account/invalid')
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect("./")
