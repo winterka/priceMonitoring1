@@ -20,5 +20,5 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect("./")
 
-def Link(request):
+def link(request):
     return render(request, 'main/link.html')
