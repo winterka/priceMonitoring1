@@ -5,7 +5,8 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-    return render(request, 'main/index.html')
+    chart_elements = {'chart_elements': list(Complete.objects.values())}
+    return render(request, 'main/index.html', chart_elements)
 
 def login(request):
     username = request.POST['username']

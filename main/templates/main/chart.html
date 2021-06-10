@@ -24,40 +24,14 @@
   var chart = am4core.create("chartdiv", am4charts.XYChart);
   
   // Add data
+  {% for elem in chart_elements %}
   chart.data = [ {
-    "date": "2012-07-28",
-    "value": 11
-  }, {
-    "date": "2012-07-29",
-    "value": 15
-  }, {
-    "date": "2012-07-30",
-    "value": 16
-  }, {
-    "date": "2012-07-31",
-    "value": 18
-  }, {
-    "date": "2012-08-01",
-    "value": 13
-  }, {
-    "date": "2012-08-02",
-    "value": 22
-  }, {
-    "date": "2012-08-03",
-    "value": 23
-  }, {
-    "date": "2012-08-04",
-    "value": 20
-  }, {
-    "date": "2012-08-05",
-    "value": 17
-  }, {
-    "date": "2012-08-06",
-    "value": 16
-  }];
-  
+    "date": "{{elem.pub_date}} ",
+    "value": {{elem.price}},
+  }]; 
+  {% endfor %}
   // Set input format for the dates
-  chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
+  //chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
   
   // Create axes
   var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
@@ -107,8 +81,6 @@
   
   dateAxis.start = 0.79;
   dateAxis.keepSelection = true;
-  
-  
   }); // end am4core.ready()
   </script>
   
