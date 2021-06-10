@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Complete
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
