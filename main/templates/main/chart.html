@@ -24,12 +24,12 @@
   var chart = am4core.create("chartdiv", am4charts.XYChart);
   
   // Add data
-  {% for elem in chart_elements %}
   chart.data = [ {
+    {% for elem in chart_elements %}
     "date": "{{elem.pub_date}} ",
     "value": {{elem.price}},
+    {% endfor %}
   }]; 
-  {% endfor %}
   // Set input format for the dates
   //chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
   
