@@ -9,10 +9,12 @@ Chart.defaults.global.defaultFontColor = '#777';
 let massPopChart = new Chart(myChart, {
   type:'line', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
   data:{
-    labels:[{% for elem in chart_elements %}{{elem.pub_date}}{% endfor %}],
+    labels:[{% for elem in chart_elements %}
+            "{{elem.name}}",{% endfor %}],
     datasets:[{
-      label:'Population',
-      data:[{{elem.price}}],
+      label:'Price',
+      data:[{% for elem in chart_elements %}
+            {{elem.price}},{% endfor %}],
       //backgroundColor:'green',
       backgroundColor:[
         'rgba(255, 99, 132, 0.6)',
@@ -32,11 +34,11 @@ let massPopChart = new Chart(myChart, {
   options:{
     title:{
       display:true,
-      text:'Largest Cities In Massachusetts',
+      text:'Price Monitoring',
       fontSize:25
     },
     legend:{
-      display:true,
+      display:false,
       position:'right',
       labels:{
         fontColor:'#000'
