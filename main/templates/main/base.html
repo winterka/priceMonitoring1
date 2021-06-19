@@ -19,10 +19,6 @@
 
 	</head>
 	<body>
-
-		<div class="container">
-			<canvas id="myChart"></canvas>
-		</div>
 		<!--==== NAVBAR ====-->
 		{% block navbar %}
 		<nav class="navbar navbar-expand-md navbar-dark bg-success">
@@ -46,9 +42,10 @@
 		<!--==== END OF NAVBAR ====-->
 		<!--==== CONTENT ====-->
 		<main role='main' class="container">
-			{% block main %}
-				{% include './chart.html' %}
-			{% endblock %}
+			<div class="container">
+				<canvas id="myChart"></canvas>
+			</div>}
+			{% include './chart.html' %}
 		</main>
 		<!--==== END OF CONTENT ====-->
 		</div>
