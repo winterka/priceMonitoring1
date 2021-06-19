@@ -4,8 +4,8 @@ from django.core.validators import MinValueValidator
 
 class Complete(models.Model):
 	name = models.CharField(max_length=200)
-	pub_date = models.DateTimeField('date published')
-	price = models.FloatField(blank=True, default=0)
+	pub_date = models.BigIntegerField(blank=True, default=0)
+	price = models. BigIntegerField(blank=True, default=0)
 
 	class Meta:
 		verbose_name = 'Complete Price'
