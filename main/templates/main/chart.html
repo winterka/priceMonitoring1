@@ -1,86 +1,65 @@
-<!-- Styles -->
-<style>
-  #chartdiv {
-    width: 100%;
-    height: 500px;
+<script>
+let myChart = document.getElementById('myChart').getContext('2d');
+
+// Global Options
+Chart.defaults.global.defaultFontFamily = 'Lato';
+Chart.defaults.global.defaultFontSize = 18;
+Chart.defaults.global.defaultFontColor = '#777';
+
+let massPopChart = new Chart(myChart, {
+  type:'line', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+  data:{
+    labels:['Boston', 'Worcester', 'Springfield', 'Lowell', 'Cambridge', 'New Bedford'],
+    datasets:[{
+      label:'Population',
+      data:[
+        617594,
+        181045,
+        153060,
+        106519,
+        105162,
+        95072
+      ],
+      //backgroundColor:'green',
+      backgroundColor:[
+        'rgba(255, 99, 132, 0.6)',
+        'rgba(54, 162, 235, 0.6)',
+        'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)',
+        'rgba(153, 102, 255, 0.6)',
+        'rgba(255, 159, 64, 0.6)',
+        'rgba(255, 99, 132, 0.6)'
+      ],
+      borderWidth:1,
+      borderColor:'#777',
+      hoverBorderWidth:3,
+      hoverBorderColor:'#000'
+    }]
+  },
+  options:{
+    title:{
+      display:true,
+      text:'Largest Cities In Massachusetts',
+      fontSize:25
+    },
+    legend:{
+      display:true,
+      position:'right',
+      labels:{
+        fontColor:'#000'
+      }
+    },
+    layout:{
+      padding:{
+        left:50,
+        right:0,
+        bottom:0,
+        top:0
+      }
+    },
+    tooltips:{
+      enabled:true
+    }
   }
-  
-  </style>
-  
-  <!-- Resources -->
-  <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
-  <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
-  <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
-  
-  <!-- Chart code -->
-  <script>
-  am4core.ready(function() {
-  
-  // Themes begin
-  am4core.useTheme(am4themes_animated);
-  // Themes end
-  
-  // Create chart instance
-  var chart = am4core.create("chartdiv", am4charts.XYChart);
-  
-  // Add data
-  chart.data = [ {
-    {% for elem in chart_elements %}
-    "date": "{{elem.pub_date}} ",
-    "value": {{elem.price}},
-    {% endfor %}
-  }]; 
-  // Set input format for the dates
-  //chart.dateFormatter.inputDateFormat = "yyyy-MM-dd";
-  
-  // Create axes
-  var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-  var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-  
-  // Create series
-  var series = chart.series.push(new am4charts.LineSeries());
-  series.dataFields.valueY = "value";
-  series.dataFields.dateX = "date";
-  series.tooltipText = "{value}"
-  series.strokeWidth = 2;
-  series.minBulletDistance = 15;
-  
-  // Drop-shaped tooltips
-  series.tooltip.background.cornerRadius = 20;
-  series.tooltip.background.strokeOpacity = 0;
-  series.tooltip.pointerOrientation = "vertical";
-  series.tooltip.label.minWidth = 40;
-  series.tooltip.label.minHeight = 40;
-  series.tooltip.label.textAlign = "middle";
-  series.tooltip.label.textValign = "middle";
-  
-  // Make bullets grow on hover
-  var bullet = series.bullets.push(new am4charts.CircleBullet());
-  bullet.circle.strokeWidth = 2;
-  bullet.circle.radius = 4;
-  bullet.circle.fill = am4core.color("#fff");
-  
-  var bullethover = bullet.states.create("hover");
-  bullethover.properties.scale = 1.3;
-  
-  // Make a panning cursor
-  chart.cursor = new am4charts.XYCursor();
-  chart.cursor.behavior = "panXY";
-  chart.cursor.xAxis = dateAxis;
-  chart.cursor.snapToSeries = series;
-  
-  // Create vertical scrollbar and place it before the value axis
-  chart.scrollbarY = new am4core.Scrollbar();
-  chart.scrollbarY.parent = chart.leftAxesContainer;
-  chart.scrollbarY.toBack();
-  
-  // Create a horizontal scrollbar with previe and place it underneath the date axis
-  chart.scrollbarX = new am4charts.XYChartScrollbar();
-  chart.scrollbarX.series.push(series);
-  chart.scrollbarX.parent = chart.bottomAxesContainer;
-  
-  dateAxis.start = 0.79;
-  dateAxis.keepSelection = true;
-  }); // end am4core.ready()
-  </script>
-  
+});
+</script>
