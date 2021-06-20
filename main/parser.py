@@ -17,14 +17,21 @@ def get_html(url, params=None):
 # написал, нужно дописать нахождение цены)
 def get_content(html):
     soup = BeautifulSoup(html,'html.parser')
+    #Идем по карточкам товаров и вытягиваем инфу
     items = soup.find_all('table', class_='model-short-block')
     cards = []
     for item in items:
         cards.append({
             'title' : item.find('a', class_ = 'model-short-title no-u').get_text(strip = True),
             'link' : HOST + item.find('a', class_ = 'model-short-title no-u').get('href'),
+            #Я хз как правильно тут вытянуть инфу, у меня не получается сделать пока что
+            # Возможный костыль это оставить парс цены как есть но убирать лишний текст
+            # с помощью replace, но вероятно для этого потребуется переводить все это в новый объект
+            'price_rub' : item.find('div',class_ = 'model-price-range').get_text(strip = True),
+            
             
         })
+
     print(cards)
     print(len(cards))
 
@@ -35,5 +42,4 @@ def parse():
         get_content(html.text)
     else:
         print('Error')
-
 parse()
