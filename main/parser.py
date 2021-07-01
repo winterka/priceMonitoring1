@@ -24,15 +24,13 @@ def get_content(html):
     for item in items:
         cards.append({
             'title' : item.find('a', class_ = 'model-short-title no-u').get_text(strip = True) ,
-            'link' : HOST + item.find('a', class_ = 'model-short-title no-u').get('href'),
             'price_rub' : soup.select_one(selector="#price_1941016").get_text(strip=True).replace(u"\xa0",u""),
             
             
             
-        })
-        
-    print(cards)
-    print(len(cards))
+        }) 
+    return cards  
+    
 
 def parse():
     html = get_html(URL)
