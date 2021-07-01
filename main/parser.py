@@ -40,7 +40,8 @@ def get_content(html):
         else:
             highestPrice = lowestPrice
         averagePrice = int((lowestPrice + highestPrice) / 2)
-        
+        name = currentTitle
+        price = averagePrice
         print(currentTitle)
         print(averagePrice)
 

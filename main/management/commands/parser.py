@@ -2,135 +2,78 @@ import datetime
 import urllib.parse
 from collections import namedtuple
 
-import bs4
+from bs4 import BeautifulSoup
 import requests
 from django.core.management.base import BaseCommand
 
 from main.models import Complete
 
 
-InnerBlock = namedtuple('Block', 'title,price,currency,date,url')
 
 
-class Block(InnerBlock):
-
-    def __str__(self):
-        return f'{self.title}\t{self.price} {self.currency}\t{self.date}\t{self.url}'
 
 
-class KatalogParser:
+       
+#Константы
 
-    def __init__(self):
-        self.session = requests.Session()
-        self.session.headers = {
-            'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
-            'Accept-Language': 'ru',
-        }
+URL = 'https://www.e-katalog.ru/list/189/'
+HEADERS = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0'}
+HOST = 'https://www.e-katalog.ru'
 
-    def get_page(self, page: int = None):
-        params = {
-            'radius': 0,
-            'user': 1,
-        }
-        if page and page > 1:
-            params['p'] = page
+#Функция будет принимать url для парсинга + параметры(Страницы)
+def get_html(url, params=None):
+    r = requests.get(url, headers = HEADERS, params = params)
+    return r
 
-        # url = 'https://www.avito.ru/moskva/avtomobili/bmw/5'
-        url = 'https://www.e-katalog.ru/list/189/'
-        # url = 'https://www.avito.ru/moskva/odezhda_obuv_aksessuary/zhenskaya_odezhda'
-        r = self.session.get(url, params=params)
-        return r.text
-
-    @staticmethod
-    def parse_block(self, item):
-        # Выбрать блок со ссылкой
-        url_block = item.select_one('a.item-description-title-link')
-        href = url_block.get('href')
-        if href:
-            url = 'https://www.e-katalog.ru' + href
+#Получает контент со страницы, записывает названия, ссылки(не уверен что они нужны но пока что
+# написал, нужно дописать нахождение цены)
+def get_content(html):
+    soup = BeautifulSoup(html,'html.parser')
+    #Идем по карточкам товаров и вытягиваем инфу
+    items = soup.find_all('table', class_='model-short-block')
+    cards = []
+    for item in items:
+        cards.append({
+            'title' : item.find('a', class_ = 'model-short-title no-u').get_text(strip = True) ,
+            'price_rub' : item.find('div', class_ = 'model-price-range').get_text(strip = True).replace(u'\xa0',u''),
+        }) 
+    for i in range(len(cards)):
+        temp = str(cards[i])
+        #print(temp)
+        temp.replace('title' , '')
+        currentTitle = str(temp[11 : temp.find(",") - 1 ])
+        if (temp.find("д") != -1 ):
+            lowestPrice = int(temp[temp.find('т') + 1 : temp.find("д")])
         else:
-            url = None
-
-        # Выбрать блок с названием
-        title_block = item.select_one('h3.title.item-description-title span')
-        title = title_block.string.strip()
-
-        # Выбрать блок с названием и валютой
-        price_block = item.select_one('span.price')
-        price_block = price_block.get_text('\n')
-        price_block = list(filter(None, map(lambda i: i.strip(), price_block.split('\n'))))
-        if len(price_block) == 2:
-            price, currency = price_block
-            price = int(price.replace(' ', ''))
-        elif len(price_block) == 1:
-            # Бесплатно
-            price = 0
+            lowestPrice = int(temp[temp.find('т') + 1 : temp.find("р")])
+        if (temp.find('до') != -1):
+            highestPrice = int(temp[temp.find('до') + 2 : temp.find("р")])
         else:
-            price = None
-            print(f'Что-то пошло не так при поиске цены: {price_block}, {url}')
+            highestPrice = lowestPrice
+        averagePrice = int((lowestPrice + highestPrice) / 2)
+        p = Complete(
+            name = currentTitle,
+            price = averagePrice,
+        ).save()
+        print(currentTitle)
+        print(averagePrice)
 
-        # Выбрать блок с датой размещения объявления
+    return cards  
 
-        bbb = Block(
-            url=url,
-            title=title,
-            price=price,
-        )
-        print(bbb)
+    
 
-        try:
-            p = Product.objects.get(url=url)
-            p.title = title
-            p.price = price
-            p.currency = currency
-            p.save()
-        except Product.DoesNotExist:
-            p = Product(
-                url=url,
-                title=title,
-                price=price,
-            ).save()
-
-        print(f'product {p}')
-
-    def get_pagination_limit(self):
-        text = self.get_page()
-        soup = bs4.BeautifulSoup(text, 'lxml')
-        print(soup.prettify())
-
-        container = soup.select('a.pagination-page')
-        if not container:
-            return 1
-        last_button = container[-1]
-        href = last_button.get('href')
-        if not href:
-            return 1
-
-        r = urllib.parse.urlparse(href)
-        params = urllib.parse.parse_qs(r.query)
-        return int(params['p'][0])
-
-    def get_blocks(self, page: int = None):
-        text = self.get_page(page=page)
-        soup = bs4.BeautifulSoup(text, 'lxml')
-
-        # Запрос CSS-селектора, состоящего из множества классов, производится через select
-        container = soup.select('div.item.item_table.clearfix.js-catalog-item-enum.item-with-contact.js-item-extended')
-        for item in container:
-            self.parse_block(item=item)
-
-    def parse_all(self):
-        limit = self.get_pagination_limit()
-        print(f'Всего страниц: {limit}')
-
-        for i in range(1, limit + 1):
-            self.get_blocks(page=i)
-            # break
+def parse():
+    html = get_html(URL)
+    #Проверка заходит ли парсер на сайт
+    if html.status_code == 200:
+        get_content(html.text)
+    else:
+        print('Error')
+parse()
 
 
 class Command(BaseCommand):
     help = 'Парсинг e-katalog'
 
     def handle(self, *args, **options):
-        p = KatalogParser()
-        p.parse_all()
+        parse()
