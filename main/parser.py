@@ -24,12 +24,28 @@ def get_content(html):
     for item in items:
         cards.append({
             'title' : item.find('a', class_ = 'model-short-title no-u').get_text(strip = True) ,
-            'price_rub' : soup.select_one(selector="#price_1941016").get_text(strip=True).replace(u"\xa0",u""),
-            
-            
-            
+            'price_rub' : item.find('div', class_ = 'model-price-range').get_text(strip = True).replace(u'\xa0',u''),
         }) 
+    for i in range(len(cards)):
+        temp = str(cards[i])
+        #print(temp)
+        temp.replace('title' , '')
+        currentTitle = str(temp[11 : temp.find(",") - 1 ])
+        if (temp.find("д") != -1 ):
+            lowestPrice = int(temp[temp.find('т') + 1 : temp.find("д")])
+        else:
+            lowestPrice = int(temp[temp.find('т') + 1 : temp.find("р")])
+        if (temp.find('до') != -1):
+            highestPrice = int(temp[temp.find('до') + 2 : temp.find("р")])
+        else:
+            highestPrice = lowestPrice
+        averagePrice = int((lowestPrice + highestPrice) / 2)
+        
+        print(currentTitle)
+        print(averagePrice)
+
     return cards  
+
     
 
 def parse():
