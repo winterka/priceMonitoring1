@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator
 class Complete(models.Model):
 	name = models.CharField(max_length=200)
 	price = models. FloatField(blank=True, default=0)
+	
 	url = models.URLField(
 		verbose_name= 'url'
 	)

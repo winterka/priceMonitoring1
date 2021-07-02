@@ -2,6 +2,7 @@ from os import replace
 import unicodedata
 from bs4 import BeautifulSoup
 import requests
+from main.models import Complete
 
 #Константы
 
@@ -18,6 +19,7 @@ def get_html(url, params=None):
 # написал, нужно дописать нахождение цены)
 def get_content(html):
     soup = BeautifulSoup(html,'html.parser')
+
     #Идем по карточкам товаров и вытягиваем инфу
     items = soup.find_all('table', class_='model-short-block')
     cards = []
@@ -44,16 +46,19 @@ def get_content(html):
         price = averagePrice
         print(currentTitle)
         print(averagePrice)
-
+    
     return cards  
 
     
 
 def parse():
-    html = get_html(URL)
-    #Проверка заходит ли парсер на сайт
-    if html.status_code == 200:
-        get_content(html.text)
-    else:
-        print('Error')
+    pg = int(input('Сколько страниц парсить '))
+    for i in range(pg):
+        page = str(i)
+        html = get_html(URL + page + '/')
+        #Проверка заходит ли парсер на сайт
+        if html.status_code == 200:
+            get_content(html.text)
+        else:
+            print('Error')
 parse()
