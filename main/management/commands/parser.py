@@ -63,12 +63,15 @@ def get_content(html):
     
 
 def parse():
-    html = get_html(URL)
-    #Проверка заходит ли парсер на сайт
-    if html.status_code == 200:
-        get_content(html.text)
-    else:
-        print('Error')
+    pg = int(input('Сколько страниц парсить '))
+    for i in range(pg):
+        page = str(i)
+        html = get_html(URL + page + '/')
+        #Проверка заходит ли парсер на сайт
+        if html.status_code == 200:
+            get_content(html.text)
+        else:
+            print('Error')
 parse()
 
 
